@@ -1,0 +1,228 @@
+###############################################################################
+# MOBILEUM PRODUCTION EMAIL BROKER
+#
+# Host         : mta2.mobileum.com
+# Domain       : mobileum.com
+#
+# Routing:
+#   Proofpoint : secondary unseen copy
+#   Barracuda  : primary production delivery
+#   Check Point: disabled
+#
+# TLS:
+#   Incoming   : Mobileum wildcard certificate
+#   Outgoing   : STARTTLS mandatory to Proofpoint and Barracuda
+#
+# Spool:
+#   Persistent 500 GB EBS mounted at /var/spool/exim4
+###############################################################################
+
+primary_hostname = mta2.mobileum.com
+
+###############################################################################
+# LOGGING
+###############################################################################
+log_selector = +tls_cipher \
+               +tls_certificate_verified \
+               +tls_peerdn \
+               +return_path_on_delivery \
+               +sender_on_delivery \
+               +smtp_confirmation
+
+###############################################################################
+# SPOOL
+###############################################################################
+spool_directory = /var/spool/exim4
+split_spool_directory = true
+
+###############################################################################
+# ACCEPTED DOMAIN
+###############################################################################
+domainlist accepted_domains = mobileum.com
+
+###############################################################################
+# SMTP LISTENER - PRODUCTION
+###############################################################################
+daemon_smtp_ports = 25
+local_interfaces = <; 127.0.0.1 ; 172.31.28.75
+smtp_banner = $primary_hostname ESMTP
+
+###############################################################################
+# CONNECTION / RESOURCE PROTECTION
+###############################################################################
+smtp_accept_max = 400
+smtp_accept_max_per_host = 50
+smtp_accept_max_per_connection = 100
+smtp_accept_max_nonmail = 10
+smtp_connect_backlog = 100
+smtp_enforce_sync = true
+smtp_receive_timeout = 5m
+rfc1413_query_timeout = 0s
+
+###############################################################################
+# RECIPIENT PROTECTION
+###############################################################################
+recipients_max = 500
+
+###############################################################################
+# SPOOL PROTECTION
+###############################################################################
+check_spool_space = 50G
+check_spool_inodes = 100000
+smtp_check_spool_space = true
+
+###############################################################################
+# QUEUE / DELIVERY
+# SAFE-HOLD is disabled.
+###############################################################################
+queue_only_override = false
+queue_run_max = 10
+remote_max_parallel = 50
+timeout_frozen_after = 0s
+
+###############################################################################
+# INBOUND TLS / STARTTLS
+###############################################################################
+tls_advertise_hosts = *
+tls_certificate = /etc/exim4/tls/server.crt
+tls_privatekey = /etc/exim4/tls/server.key
+tls_require_ciphers = NORMAL:-VERS-SSL3.0:-VERS-TLS1.0:-VERS-TLS1.1
+
+###############################################################################
+# ACL ENTRY POINTS
+###############################################################################
+acl_smtp_rcpt = acl_check_rcpt
+acl_smtp_data = acl_check_data
+acl_smtp_vrfy = acl_deny_vrfy
+acl_smtp_expn = acl_deny_expn
+
+###############################################################################
+# DELIVERY FAILURE RETENTION
+###############################################################################
+bounce_return_message = true
+bounce_return_body = true
+bounce_return_size_limit = 0
+bounce_return_linesize_limit = 52428800
+
+###############################################################################
+# ACLs
+###############################################################################
+begin acl
+
+acl_deny_vrfy:
+  deny
+    message = VRFY disabled
+
+acl_deny_expn:
+  deny
+    message = EXPN disabled
+
+acl_check_rcpt:
+  deny
+    message = Relay not permitted
+    !domains = +accepted_domains
+
+  accept
+    domains = +accepted_domains
+
+  deny
+    message = Relay not permitted
+
+acl_check_data:
+  accept
+
+###############################################################################
+# ROUTERS
+###############################################################################
+begin routers
+
+barracuda_error_sink:
+  driver = accept
+  domains = mta-errors.internal
+  local_parts = barracuda-errors
+  transport = barracuda_error_maildir
+
+# Check Point disabled.
+# checkpoint_copy:
+#   driver = manualroute
+#   domains = +accepted_domains
+#   route_list = * <CHECKPOINT-ENDPOINT>
+#   transport = checkpoint_smtp
+#   errors_to =
+#   unseen
+
+proofpoint_copy:
+  driver = manualroute
+  domains = +accepted_domains
+  route_list = * 208.56.17.36:208.56.0.36
+  transport = proofpoint_smtp
+  errors_to =
+  unseen
+
+barracuda_production:
+  driver = manualroute
+  domains = +accepted_domains
+  route_list = * d100265a.ess.barracudanetworks.com:d100265b.ess.barracudanetworks.com bydns ipv4_only
+  transport = barracuda_smtp
+  errors_to = barracuda-errors@mta-errors.internal
+  no_more
+
+###############################################################################
+# TRANSPORTS
+###############################################################################
+begin transports
+
+barracuda_error_maildir:
+  driver = appendfile
+  directory = /var/spool/exim4/barracuda-errors/Maildir
+  maildir_format
+  mode = 0600
+  user = Debian-exim
+  group = Debian-exim
+
+remote_smtp:
+  driver = smtp
+
+# Check Point disabled.
+# checkpoint_smtp:
+#   driver = smtp
+#   return_path = $sender_address
+#   hosts_require_tls = *
+#   tls_tempfail_tryclear = false
+
+proofpoint_smtp:
+  driver = smtp
+  return_path = $sender_address
+  hosts_require_tls = *
+  tls_tempfail_tryclear = false
+  tls_verify_certificates = system
+  tls_try_verify_hosts = *
+  message_linelength_limit = 52428800
+
+barracuda_smtp:
+  driver = smtp
+  return_path = $sender_address
+  hosts_require_tls = *
+  tls_tempfail_tryclear = false
+  tls_verify_certificates = system
+  tls_verify_hosts = *
+  tls_verify_cert_hostnames = *
+  tls_sni = $host
+  message_linelength_limit = 52428800
+
+###############################################################################
+# RETRY
+###############################################################################
+begin retry
+
+*  *  F,2h,15m; G,16h,1h,1.5; F,4d,6h
+
+###############################################################################
+# REWRITE
+###############################################################################
+begin rewrite
+
+###############################################################################
+# AUTHENTICATORS
+###############################################################################
+begin authenticators
