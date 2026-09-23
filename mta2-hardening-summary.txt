@@ -1,0 +1,887 @@
+
+======================================================================
+MOBILEUM MTA OS HARDENING SUMMARY
+======================================================================
+Hostname        : mta2.mobileum.com
+Generated       : Wed, 23 Sep 2026 13:51:49 +0530
+Kernel          : 7.0.0-1012-aws
+Operating System: Ubuntu 24.04.4 LTS
+
+======================================================================
+1. HARDENING STATUS OVERVIEW
+======================================================================
+auditd service                                : PASS - Active
+Linux audit log                               : PASS - Present
+Dedicated sudo logging                        : PASS - Present
+Sudo I/O recording                            : PASS - Directory present
+Persistent systemd journal                    : PASS - Enabled
+UFW firewall                                  : PASS - Active
+
+======================================================================
+2. AUDITD CONFIGURATION
+======================================================================
+enabled 1
+failure 1
+pid 513
+rate_limit 0
+backlog_limit 8192
+lost 0
+backlog 0
+backlog_wait_time 60000
+backlog_wait_time_actual 0
+loginuid_immutable 0 unlocked
+
+Loaded audit rules:
+-w /etc/passwd -p wa -k identity
+-w /etc/group -p wa -k identity
+-w /etc/shadow -p wa -k identity
+-w /etc/gshadow -p wa -k identity
+-w /etc/security/opasswd -p wa -k identity
+-w /etc/sudoers -p wa -k sudo_policy
+-w /etc/sudoers.d -p wa -k sudo_policy
+-w /var/log/sudo.log -p wa -k sudo_log
+-w /etc/ssh/sshd_config -p wa -k ssh_config
+-w /etc/ssh/sshd_config.d -p wa -k ssh_config
+-w /etc/netplan -p wa -k network_config
+-w /etc/hosts -p wa -k network_config
+-w /etc/hostname -p wa -k network_config
+-w /etc/systemd/system -p wa -k systemd_config
+-w /etc/crontab -p wa -k cron_config
+-w /etc/cron.d -p wa -k cron_config
+-w /etc/cron.hourly -p wa -k cron_config
+-w /etc/cron.daily -p wa -k cron_config
+-w /etc/cron.weekly -p wa -k cron_config
+-w /etc/cron.monthly -p wa -k cron_config
+-w /etc/pam.d -p wa -k pam_config
+-w /etc/security -p wa -k security_config
+-w /etc/apparmor -p wa -k apparmor_config
+-w /etc/apparmor.d -p wa -k apparmor_config
+-w /etc/audit -p wa -k audit_config
+-w /etc/apt -p wa -k package_config
+-w /usr/bin/apt -p x -k package_mgmt
+-w /usr/bin/apt-get -p x -k package_mgmt
+-w /usr/bin/dpkg -p x -k package_mgmt
+-w /usr/bin/sudo -p x -k privileged_tool
+-w /usr/bin/su -p x -k privileged_tool
+-w /usr/sbin/insmod -p x -k kernel_modules
+-w /usr/sbin/rmmod -p x -k kernel_modules
+-w /usr/sbin/modprobe -p x -k kernel_modules
+-w /usr/bin/kmod -p x -k kernel_modules
+-w /etc/localtime -p wa -k time_change
+-a always,exit -F arch=b64 -S adjtimex,settimeofday -F key=time_change
+-a always,exit -F arch=b64 -S clock_settime -F a0=0x0 -F key=time_change
+-a always,exit -F arch=b64 -S sethostname,setdomainname -F key=system_locale
+-a always,exit -F arch=b64 -S mount -F auid>=1000 -F auid!=-1 -F key=mounts
+-a always,exit -F arch=b64 -S rename,rmdir,unlink,unlinkat,renameat -F auid>=1000 -F auid!=-1 -F key=delete
+-a always,exit -F arch=b64 -S execve -F euid=0 -F auid>=1000 -F auid!=-1 -F key=privileged
+-a always,exit -F arch=b32 -S settimeofday,adjtimex -F key=time_change
+-a always,exit -F arch=b32 -S clock_settime -F a0=0x0 -F key=time_change
+-a always,exit -F arch=b32 -S sethostname,setdomainname -F key=system_locale
+-a always,exit -F arch=b32 -S mount -F auid>=1000 -F auid!=-1 -F key=mounts
+-a always,exit -F arch=b32 -S unlink,rename,rmdir,unlinkat,renameat -F auid>=1000 -F auid!=-1 -F key=delete
+-a always,exit -F arch=b32 -S execve -F euid=0 -F auid>=1000 -F auid!=-1 -F key=privileged
+-a always,exit -F arch=b64 -S init_module,delete_module,finit_module -F key=kernel_modules
+
+======================================================================
+3. SUDO LOGGING
+======================================================================
+Recent sudo activity:
+Sep 23 13:49:09 : ubuntu : PWD=/home/ubuntu ; USER=root ; TSID=000C06 ;
+    COMMAND=/usr/bin/bash -s
+Sep 23 13:49:24 : ubuntu : PWD=/home/ubuntu ; USER=root ; TSID=000C07 ;
+    COMMAND=/usr/bin/bash -s
+Sep 23 13:49:39 : ubuntu : PWD=/home/ubuntu ; USER=root ; TSID=000C08 ;
+    COMMAND=/usr/bin/bash -s
+Sep 23 13:49:54 : ubuntu : PWD=/home/ubuntu ; USER=root ; TSID=000C09 ;
+    COMMAND=/usr/bin/bash -s
+Sep 23 13:50:09 : ubuntu : PWD=/home/ubuntu ; USER=root ; TSID=000C0A ;
+    COMMAND=/usr/bin/bash -s
+Sep 23 13:50:24 : ubuntu : PWD=/home/ubuntu ; USER=root ; TSID=000C0B ;
+    COMMAND=/usr/bin/bash -s
+Sep 23 13:50:39 : ubuntu : PWD=/home/ubuntu ; USER=root ; TSID=000C0C ;
+    COMMAND=/usr/bin/bash -s
+Sep 23 13:50:54 : ubuntu : PWD=/home/ubuntu ; USER=root ; TSID=000C0D ;
+    COMMAND=/usr/bin/bash -s
+Sep 23 13:51:09 : ubuntu : PWD=/home/ubuntu ; USER=root ; TSID=000C0E ;
+    COMMAND=/usr/bin/bash -s
+Sep 23 13:51:24 : ubuntu : PWD=/home/ubuntu ; USER=root ; TSID=000C0F ;
+    COMMAND=/usr/bin/bash -s
+Sep 23 13:51:39 : ubuntu : PWD=/home/ubuntu ; USER=root ; TSID=000C0G ;
+    COMMAND=/usr/bin/bash -s
+Sep 23 13:51:49 : ubuntu : TTY=pts/0 ; PWD=/home/ubuntu/mta-os-hardening ;
+    USER=root ; TSID=000C0H ; COMMAND=/usr/bin/tee mta2-hardening-summary.txt
+Sep 23 13:51:49 : ubuntu : TTY=pts/0 ; PWD=/home/ubuntu/mta-os-hardening ;
+    USER=root ; TSID=000C0I ; COMMAND=/usr/bin/test -f /var/log/audit/audit.log
+Sep 23 13:51:49 : ubuntu : TTY=pts/0 ; PWD=/home/ubuntu/mta-os-hardening ;
+    USER=root ; TSID=000C0J ; COMMAND=/usr/bin/test -f /var/log/sudo.log
+Sep 23 13:51:49 : ubuntu : TTY=pts/0 ; PWD=/home/ubuntu/mta-os-hardening ;
+    USER=root ; TSID=000C0K ; COMMAND=/usr/bin/test -d /var/log/sudo-io
+Sep 23 13:51:49 : ubuntu : TTY=pts/0 ; PWD=/home/ubuntu/mta-os-hardening ;
+    USER=root ; TSID=000C0L ; COMMAND=/usr/bin/test -d /var/log/journal
+Sep 23 13:51:49 : ubuntu : TTY=pts/0 ; PWD=/home/ubuntu/mta-os-hardening ;
+    USER=root ; TSID=000C0M ; COMMAND=/usr/sbin/ufw status
+Sep 23 13:51:49 : ubuntu : TTY=pts/0 ; PWD=/home/ubuntu/mta-os-hardening ;
+    USER=root ; TSID=000C0N ; COMMAND=/usr/sbin/auditctl -s
+Sep 23 13:51:49 : ubuntu : TTY=pts/0 ; PWD=/home/ubuntu/mta-os-hardening ;
+    USER=root ; TSID=000C0O ; COMMAND=/usr/sbin/auditctl -l
+Sep 23 13:51:49 : ubuntu : TTY=pts/0 ; PWD=/home/ubuntu/mta-os-hardening ;
+    USER=root ; TSID=000C0P ; COMMAND=/usr/bin/tail -40 /var/log/sudo.log
+
+Recorded sudo sessions:
+Sep 23 13:46:54 2026 : ubuntu : HOST=mta2.mobileum.com ; CWD=/home/ubuntu ; USER=root ; TSID=000BZX ; COMMAND=/usr/bin/bash -s
+Sep 23 13:47:09 2026 : ubuntu : HOST=mta2.mobileum.com ; CWD=/home/ubuntu ; USER=root ; TSID=000BZY ; COMMAND=/usr/bin/bash -s
+Sep 23 13:47:24 2026 : ubuntu : HOST=mta2.mobileum.com ; CWD=/home/ubuntu ; USER=root ; TSID=000BZZ ; COMMAND=/usr/bin/bash -s
+Sep 23 13:47:39 2026 : ubuntu : HOST=mta2.mobileum.com ; CWD=/home/ubuntu ; USER=root ; TSID=000C00 ; COMMAND=/usr/bin/bash -s
+Sep 23 13:47:54 2026 : ubuntu : HOST=mta2.mobileum.com ; CWD=/home/ubuntu ; USER=root ; TSID=000C01 ; COMMAND=/usr/bin/bash -s
+Sep 23 13:48:09 2026 : ubuntu : HOST=mta2.mobileum.com ; CWD=/home/ubuntu ; USER=root ; TSID=000C02 ; COMMAND=/usr/bin/bash -s
+Sep 23 13:48:24 2026 : ubuntu : HOST=mta2.mobileum.com ; CWD=/home/ubuntu ; USER=root ; TSID=000C03 ; COMMAND=/usr/bin/bash -s
+Sep 23 13:48:39 2026 : ubuntu : HOST=mta2.mobileum.com ; CWD=/home/ubuntu ; USER=root ; TSID=000C04 ; COMMAND=/usr/bin/bash -s
+Sep 23 13:48:54 2026 : ubuntu : HOST=mta2.mobileum.com ; CWD=/home/ubuntu ; USER=root ; TSID=000C05 ; COMMAND=/usr/bin/bash -s
+Sep 23 13:49:09 2026 : ubuntu : HOST=mta2.mobileum.com ; CWD=/home/ubuntu ; USER=root ; TSID=000C06 ; COMMAND=/usr/bin/bash -s
+Sep 23 13:49:24 2026 : ubuntu : HOST=mta2.mobileum.com ; CWD=/home/ubuntu ; USER=root ; TSID=000C07 ; COMMAND=/usr/bin/bash -s
+Sep 23 13:49:39 2026 : ubuntu : HOST=mta2.mobileum.com ; CWD=/home/ubuntu ; USER=root ; TSID=000C08 ; COMMAND=/usr/bin/bash -s
+Sep 23 13:49:54 2026 : ubuntu : HOST=mta2.mobileum.com ; CWD=/home/ubuntu ; USER=root ; TSID=000C09 ; COMMAND=/usr/bin/bash -s
+Sep 23 13:50:09 2026 : ubuntu : HOST=mta2.mobileum.com ; CWD=/home/ubuntu ; USER=root ; TSID=000C0A ; COMMAND=/usr/bin/bash -s
+Sep 23 13:50:24 2026 : ubuntu : HOST=mta2.mobileum.com ; CWD=/home/ubuntu ; USER=root ; TSID=000C0B ; COMMAND=/usr/bin/bash -s
+Sep 23 13:50:39 2026 : ubuntu : HOST=mta2.mobileum.com ; CWD=/home/ubuntu ; USER=root ; TSID=000C0C ; COMMAND=/usr/bin/bash -s
+Sep 23 13:50:54 2026 : ubuntu : HOST=mta2.mobileum.com ; CWD=/home/ubuntu ; USER=root ; TSID=000C0D ; COMMAND=/usr/bin/bash -s
+Sep 23 13:51:09 2026 : ubuntu : HOST=mta2.mobileum.com ; CWD=/home/ubuntu ; USER=root ; TSID=000C0E ; COMMAND=/usr/bin/bash -s
+Sep 23 13:51:24 2026 : ubuntu : HOST=mta2.mobileum.com ; CWD=/home/ubuntu ; USER=root ; TSID=000C0F ; COMMAND=/usr/bin/bash -s
+Sep 23 13:51:39 2026 : ubuntu : HOST=mta2.mobileum.com ; CWD=/home/ubuntu ; USER=root ; TSID=000C0G ; COMMAND=/usr/bin/bash -s
+Sep 23 13:51:49 2026 : ubuntu : HOST=mta2.mobileum.com ; TTY=pts/0 ; CWD=/home/ubuntu/mta-os-hardening ; USER=root ; TSID=000C0H ; COMMAND=/usr/bin/tee mta2-hardening-summary.txt
+Sep 23 13:51:49 2026 : ubuntu : HOST=mta2.mobileum.com ; TTY=pts/0 ; CWD=/home/ubuntu/mta-os-hardening ; USER=root ; TSID=000C0I ; COMMAND=/usr/bin/test -f /var/log/audit/audit.log
+Sep 23 13:51:49 2026 : ubuntu : HOST=mta2.mobileum.com ; TTY=pts/0 ; CWD=/home/ubuntu/mta-os-hardening ; USER=root ; TSID=000C0J ; COMMAND=/usr/bin/test -f /var/log/sudo.log
+Sep 23 13:51:49 2026 : ubuntu : HOST=mta2.mobileum.com ; TTY=pts/0 ; CWD=/home/ubuntu/mta-os-hardening ; USER=root ; TSID=000C0K ; COMMAND=/usr/bin/test -d /var/log/sudo-io
+Sep 23 13:51:49 2026 : ubuntu : HOST=mta2.mobileum.com ; TTY=pts/0 ; CWD=/home/ubuntu/mta-os-hardening ; USER=root ; TSID=000C0L ; COMMAND=/usr/bin/test -d /var/log/journal
+Sep 23 13:51:49 2026 : ubuntu : HOST=mta2.mobileum.com ; TTY=pts/0 ; CWD=/home/ubuntu/mta-os-hardening ; USER=root ; TSID=000C0M ; COMMAND=/usr/sbin/ufw status
+Sep 23 13:51:49 2026 : ubuntu : HOST=mta2.mobileum.com ; TTY=pts/0 ; CWD=/home/ubuntu/mta-os-hardening ; USER=root ; TSID=000C0N ; COMMAND=/usr/sbin/auditctl -s
+Sep 23 13:51:49 2026 : ubuntu : HOST=mta2.mobileum.com ; TTY=pts/0 ; CWD=/home/ubuntu/mta-os-hardening ; USER=root ; TSID=000C0O ; COMMAND=/usr/sbin/auditctl -l
+Sep 23 13:51:49 2026 : ubuntu : HOST=mta2.mobileum.com ; TTY=pts/0 ; CWD=/home/ubuntu/mta-os-hardening ; USER=root ; TSID=000C0P ; COMMAND=/usr/bin/tail -40 /var/log/sudo.log
+Sep 23 13:51:49 2026 : ubuntu : HOST=mta2.mobileum.com ; TTY=pts/0 ; CWD=/home/ubuntu/mta-os-hardening ; USER=root ; TSID=000C0Q ; COMMAND=/usr/bin/sudoreplay -l
+
+======================================================================
+4. JOURNAL CONFIGURATION
+======================================================================
+Archived and active journals take up 686.4M in the file system.
+
+Journald configuration:
+/etc/systemd/journald.conf:
+/etc/systemd/journald.conf:[Journal]
+
+======================================================================
+5. FIREWALL STATUS
+======================================================================
+Status: active
+Logging: on (medium)
+Default: deny (incoming), allow (outgoing), disabled (routed)
+New profiles: skip
+
+To                         Action      From
+--                         ------      ----
+22/tcp                     ALLOW IN    172.31.25.209              # Mobileum mta2 SSH trusted source
+22/tcp                     ALLOW IN    172.31.27.243              # Mobileum mta2 SSH trusted source
+25/tcp                     ALLOW IN    Anywhere                   # MTA2 Internet SMTP telemetry
+
+25/tcp (v6)                DENY OUT    Anywhere (v6)              # MTA2 telemetry - block outbound SMTP
+
+
+Configured firewall rules:
+Status: active
+
+     To                         Action      From
+     --                         ------      ----
+[ 1] 22/tcp                     ALLOW IN    172.31.25.209              # Mobileum mta2 SSH trusted source
+[ 2] 22/tcp                     ALLOW IN    172.31.27.243              # Mobileum mta2 SSH trusted source
+[ 3] 25/tcp                     ALLOW IN    Anywhere                   # MTA2 Internet SMTP telemetry
+[ 4] 25/tcp (v6)                DENY OUT    Anywhere (v6)              (out) # MTA2 telemetry - block outbound SMTP
+
+
+Recent UFW events:
+Sep 23 13:47:32 mta2.mobileum.com kernel: [UFW ALLOW] IN= OUT=ens5 SRC=172.31.28.75 DST=169.254.169.123 LEN=76 TOS=0x00 PREC=0x00 TTL=64 ID=36616 DF PROTO=UDP SPT=33241 DPT=123 LEN=56 
+Sep 23 13:47:38 mta2.mobileum.com kernel: [UFW AUDIT] IN=ens5 OUT= MAC=0e:23:7d:c2:0c:11:0e:74:c9:8f:c6:53:08:00 SRC=172.31.25.209 DST=172.31.28.75 LEN=60 TOS=0x18 PREC=0xA0 TTL=64 ID=49825 DF PROTO=TCP SPT=48788 DPT=22 WINDOW=62727 RES=0x00 SYN URGP=0 
+Sep 23 13:47:48 mta2.mobileum.com kernel: [UFW AUDIT] IN= OUT=ens5 SRC=172.31.28.75 DST=169.254.169.123 LEN=76 TOS=0x00 PREC=0x00 TTL=64 ID=30330 DF PROTO=UDP SPT=35668 DPT=123 LEN=56 
+Sep 23 13:47:48 mta2.mobileum.com kernel: [UFW ALLOW] IN= OUT=ens5 SRC=172.31.28.75 DST=169.254.169.123 LEN=76 TOS=0x00 PREC=0x00 TTL=64 ID=30330 DF PROTO=UDP SPT=35668 DPT=123 LEN=56 
+Sep 23 13:47:54 mta2.mobileum.com kernel: [UFW AUDIT] IN=ens5 OUT= MAC=0e:23:7d:c2:0c:11:0e:74:c9:8f:c6:53:08:00 SRC=172.31.25.209 DST=172.31.28.75 LEN=60 TOS=0x18 PREC=0xA0 TTL=64 ID=32390 DF PROTO=TCP SPT=54680 DPT=22 WINDOW=62727 RES=0x00 SYN URGP=0 
+Sep 23 13:48:04 mta2.mobileum.com kernel: [UFW AUDIT] IN= OUT=ens5 SRC=172.31.28.75 DST=169.254.169.123 LEN=76 TOS=0x00 PREC=0x00 TTL=64 ID=65285 DF PROTO=UDP SPT=46035 DPT=123 LEN=56 
+Sep 23 13:48:04 mta2.mobileum.com kernel: [UFW ALLOW] IN= OUT=ens5 SRC=172.31.28.75 DST=169.254.169.123 LEN=76 TOS=0x00 PREC=0x00 TTL=64 ID=65285 DF PROTO=UDP SPT=46035 DPT=123 LEN=56 
+Sep 23 13:48:08 mta2.mobileum.com kernel: [UFW AUDIT] IN=ens5 OUT= MAC=0e:23:7d:c2:0c:11:0e:74:c9:8f:c6:53:08:00 SRC=172.31.25.209 DST=172.31.28.75 LEN=60 TOS=0x18 PREC=0xA0 TTL=64 ID=45809 DF PROTO=TCP SPT=39584 DPT=22 WINDOW=62727 RES=0x00 SYN URGP=0 
+Sep 23 13:48:20 mta2.mobileum.com kernel: [UFW AUDIT] IN= OUT=ens5 SRC=172.31.28.75 DST=169.254.169.123 LEN=76 TOS=0x00 PREC=0x00 TTL=64 ID=63381 DF PROTO=UDP SPT=50186 DPT=123 LEN=56 
+Sep 23 13:48:20 mta2.mobileum.com kernel: [UFW ALLOW] IN= OUT=ens5 SRC=172.31.28.75 DST=169.254.169.123 LEN=76 TOS=0x00 PREC=0x00 TTL=64 ID=63381 DF PROTO=UDP SPT=50186 DPT=123 LEN=56 
+Sep 23 13:48:38 mta2.mobileum.com kernel: [UFW AUDIT] IN=ens5 OUT= MAC=0e:23:7d:c2:0c:11:0e:74:c9:8f:c6:53:08:00 SRC=172.31.25.209 DST=172.31.28.75 LEN=60 TOS=0x18 PREC=0xA0 TTL=64 ID=56050 DF PROTO=TCP SPT=40800 DPT=22 WINDOW=62727 RES=0x00 SYN URGP=0 
+Sep 23 13:48:53 mta2.mobileum.com kernel: [UFW AUDIT] IN= OUT=ens5 SRC=172.31.28.75 DST=169.254.169.123 LEN=76 TOS=0x00 PREC=0x00 TTL=64 ID=40803 DF PROTO=UDP SPT=42032 DPT=123 LEN=56 
+Sep 23 13:48:53 mta2.mobileum.com kernel: [UFW ALLOW] IN= OUT=ens5 SRC=172.31.28.75 DST=169.254.169.123 LEN=76 TOS=0x00 PREC=0x00 TTL=64 ID=40803 DF PROTO=UDP SPT=42032 DPT=123 LEN=56 
+Sep 23 13:48:53 mta2.mobileum.com kernel: [UFW AUDIT] IN=ens5 OUT= MAC=0e:23:7d:c2:0c:11:0e:74:c9:8f:c6:53:08:00 SRC=172.31.25.209 DST=172.31.28.75 LEN=60 TOS=0x18 PREC=0xA0 TTL=64 ID=63809 DF PROTO=TCP SPT=35238 DPT=22 WINDOW=62727 RES=0x00 SYN URGP=0 
+Sep 23 13:49:08 mta2.mobileum.com kernel: [UFW AUDIT] IN=ens5 OUT= MAC=0e:23:7d:c2:0c:11:0e:74:c9:8f:c6:53:08:00 SRC=172.31.25.209 DST=172.31.28.75 LEN=60 TOS=0x18 PREC=0xA0 TTL=64 ID=44904 DF PROTO=TCP SPT=48066 DPT=22 WINDOW=62727 RES=0x00 SYN URGP=0 
+Sep 23 13:49:09 mta2.mobileum.com kernel: [UFW AUDIT] IN= OUT=ens5 SRC=172.31.28.75 DST=169.254.169.123 LEN=76 TOS=0x00 PREC=0x00 TTL=64 ID=778 DF PROTO=UDP SPT=48205 DPT=123 LEN=56 
+Sep 23 13:49:09 mta2.mobileum.com kernel: [UFW ALLOW] IN= OUT=ens5 SRC=172.31.28.75 DST=169.254.169.123 LEN=76 TOS=0x00 PREC=0x00 TTL=64 ID=778 DF PROTO=UDP SPT=48205 DPT=123 LEN=56 
+Sep 23 13:49:25 mta2.mobileum.com kernel: [UFW AUDIT] IN= OUT=ens5 SRC=172.31.28.75 DST=169.254.169.123 LEN=76 TOS=0x00 PREC=0x00 TTL=64 ID=18225 DF PROTO=UDP SPT=59048 DPT=123 LEN=56 
+Sep 23 13:49:25 mta2.mobileum.com kernel: [UFW ALLOW] IN= OUT=ens5 SRC=172.31.28.75 DST=169.254.169.123 LEN=76 TOS=0x00 PREC=0x00 TTL=64 ID=18225 DF PROTO=UDP SPT=59048 DPT=123 LEN=56 
+Sep 23 13:49:38 mta2.mobileum.com kernel: [UFW AUDIT] IN=ens5 OUT= MAC=0e:23:7d:c2:0c:11:0e:74:c9:8f:c6:53:08:00 SRC=172.31.25.209 DST=172.31.28.75 LEN=60 TOS=0x18 PREC=0xA0 TTL=64 ID=58648 DF PROTO=TCP SPT=60706 DPT=22 WINDOW=62727 RES=0x00 SYN URGP=0 
+Sep 23 13:49:41 mta2.mobileum.com kernel: [UFW AUDIT] IN= OUT=ens5 SRC=172.31.28.75 DST=169.254.169.123 LEN=76 TOS=0x00 PREC=0x00 TTL=64 ID=47368 DF PROTO=UDP SPT=35207 DPT=123 LEN=56 
+Sep 23 13:49:41 mta2.mobileum.com kernel: [UFW ALLOW] IN= OUT=ens5 SRC=172.31.28.75 DST=169.254.169.123 LEN=76 TOS=0x00 PREC=0x00 TTL=64 ID=47368 DF PROTO=UDP SPT=35207 DPT=123 LEN=56 
+Sep 23 13:49:53 mta2.mobileum.com kernel: [UFW AUDIT] IN=ens5 OUT= MAC=0e:23:7d:c2:0c:11:0e:74:c9:8f:c6:53:08:00 SRC=172.31.25.209 DST=172.31.28.75 LEN=60 TOS=0x18 PREC=0xA0 TTL=64 ID=61559 DF PROTO=TCP SPT=34690 DPT=22 WINDOW=62727 RES=0x00 SYN URGP=0 
+Sep 23 13:50:09 mta2.mobileum.com kernel: [UFW AUDIT] IN=ens5 OUT= MAC=0e:23:7d:c2:0c:11:0e:74:c9:8f:c6:53:08:00 SRC=172.31.25.209 DST=172.31.28.75 LEN=60 TOS=0x18 PREC=0xA0 TTL=64 ID=15438 DF PROTO=TCP SPT=60062 DPT=22 WINDOW=62727 RES=0x00 SYN URGP=0 
+Sep 23 13:50:14 mta2.mobileum.com kernel: [UFW AUDIT] IN= OUT=ens5 SRC=172.31.28.75 DST=169.254.169.123 LEN=76 TOS=0x00 PREC=0x00 TTL=64 ID=21815 DF PROTO=UDP SPT=33099 DPT=123 LEN=56 
+Sep 23 13:50:14 mta2.mobileum.com kernel: [UFW ALLOW] IN= OUT=ens5 SRC=172.31.28.75 DST=169.254.169.123 LEN=76 TOS=0x00 PREC=0x00 TTL=64 ID=21815 DF PROTO=UDP SPT=33099 DPT=123 LEN=56 
+Sep 23 13:50:30 mta2.mobileum.com kernel: [UFW AUDIT] IN= OUT=ens5 SRC=172.31.28.75 DST=169.254.169.123 LEN=76 TOS=0x00 PREC=0x00 TTL=64 ID=3554 DF PROTO=UDP SPT=50953 DPT=123 LEN=56 
+Sep 23 13:50:30 mta2.mobileum.com kernel: [UFW ALLOW] IN= OUT=ens5 SRC=172.31.28.75 DST=169.254.169.123 LEN=76 TOS=0x00 PREC=0x00 TTL=64 ID=3554 DF PROTO=UDP SPT=50953 DPT=123 LEN=56 
+Sep 23 13:50:38 mta2.mobileum.com kernel: [UFW AUDIT] IN=ens5 OUT= MAC=0e:23:7d:c2:0c:11:0e:74:c9:8f:c6:53:08:00 SRC=172.31.25.209 DST=172.31.28.75 LEN=60 TOS=0x18 PREC=0xA0 TTL=64 ID=4688 DF PROTO=TCP SPT=56676 DPT=22 WINDOW=62727 RES=0x00 SYN URGP=0 
+Sep 23 13:50:46 mta2.mobileum.com kernel: [UFW AUDIT] IN= OUT=ens5 SRC=172.31.28.75 DST=169.254.169.123 LEN=76 TOS=0x00 PREC=0x00 TTL=64 ID=37473 DF PROTO=UDP SPT=33357 DPT=123 LEN=56 
+Sep 23 13:50:46 mta2.mobileum.com kernel: [UFW ALLOW] IN= OUT=ens5 SRC=172.31.28.75 DST=169.254.169.123 LEN=76 TOS=0x00 PREC=0x00 TTL=64 ID=37473 DF PROTO=UDP SPT=33357 DPT=123 LEN=56 
+Sep 23 13:50:54 mta2.mobileum.com kernel: [UFW AUDIT] IN=ens5 OUT= MAC=0e:23:7d:c2:0c:11:0e:74:c9:8f:c6:53:08:00 SRC=172.31.25.209 DST=172.31.28.75 LEN=60 TOS=0x18 PREC=0xA0 TTL=64 ID=40823 DF PROTO=TCP SPT=58756 DPT=22 WINDOW=62727 RES=0x00 SYN URGP=0 
+Sep 23 13:51:02 mta2.mobileum.com kernel: [UFW AUDIT] IN= OUT=ens5 SRC=172.31.28.75 DST=169.254.169.123 LEN=76 TOS=0x00 PREC=0x00 TTL=64 ID=53059 DF PROTO=UDP SPT=34392 DPT=123 LEN=56 
+Sep 23 13:51:02 mta2.mobileum.com kernel: [UFW ALLOW] IN= OUT=ens5 SRC=172.31.28.75 DST=169.254.169.123 LEN=76 TOS=0x00 PREC=0x00 TTL=64 ID=53059 DF PROTO=UDP SPT=34392 DPT=123 LEN=56 
+Sep 23 13:51:08 mta2.mobileum.com kernel: [UFW AUDIT] IN=ens5 OUT= MAC=0e:23:7d:c2:0c:11:0e:74:c9:8f:c6:53:08:00 SRC=172.31.25.209 DST=172.31.28.75 LEN=60 TOS=0x18 PREC=0xA0 TTL=64 ID=23183 DF PROTO=TCP SPT=52046 DPT=22 WINDOW=62727 RES=0x00 SYN URGP=0 
+Sep 23 13:51:18 mta2.mobileum.com kernel: [UFW AUDIT] IN= OUT=ens5 SRC=172.31.28.75 DST=169.254.169.123 LEN=76 TOS=0x00 PREC=0x00 TTL=64 ID=28327 DF PROTO=UDP SPT=37193 DPT=123 LEN=56 
+Sep 23 13:51:18 mta2.mobileum.com kernel: [UFW ALLOW] IN= OUT=ens5 SRC=172.31.28.75 DST=169.254.169.123 LEN=76 TOS=0x00 PREC=0x00 TTL=64 ID=28327 DF PROTO=UDP SPT=37193 DPT=123 LEN=56 
+Sep 23 13:51:38 mta2.mobileum.com kernel: [UFW AUDIT] IN=ens5 OUT= MAC=0e:23:7d:c2:0c:11:0e:74:c9:8f:c6:53:08:00 SRC=172.31.25.209 DST=172.31.28.75 LEN=60 TOS=0x18 PREC=0xA0 TTL=64 ID=7454 DF PROTO=TCP SPT=51878 DPT=22 WINDOW=62727 RES=0x00 SYN URGP=0 
+Sep 23 13:51:43 mta2.mobileum.com kernel: [UFW AUDIT] IN= OUT=lo SRC=127.0.0.1 DST=127.0.0.53 LEN=67 TOS=0x00 PREC=0x00 TTL=64 ID=60293 DF PROTO=UDP SPT=38636 DPT=53 LEN=47 
+Sep 23 13:51:43 mta2.mobileum.com kernel: [UFW ALLOW] IN= OUT=ens5 SRC=172.31.28.75 DST=172.31.0.2 LEN=67 TOS=0x00 PREC=0x00 TTL=64 ID=26474 PROTO=UDP SPT=42341 DPT=53 LEN=47 
+
+======================================================================
+6. PRE-HARDENING ASSESSMENT
+======================================================================
+Latest evidence directory: /var/log/mobileum-security/pre-hardening/mta2-20260916T135114Z
+
+==============================================================================
+ MOBILEUM MTA - PRE-HARDENING SUMMARY
+==============================================================================
+
+Host      : mta2
+UTC       : 20260916T135114Z
+Script    : 02-mobileum-pre-hardening-assessment-v3.1.sh v3.0
+Mode      : READ-ONLY
+
+IMPORTANT:
+This is an evidence/baseline assessment, NOT a formal CIS certification.
+Exim is intentionally excluded.
+
+---- OS ----
+OS              : Ubuntu 24.04.4 LTS
+Kernel          : 7.0.0-1012-aws
+Architecture    : x86_64
+
+---- Listening TCP ports ----
+State  Recv-Q Send-Q               Local Address:Port  Peer Address:PortProcess                                                  
+LISTEN 0      4096                       0.0.0.0:22         0.0.0.0:*    users:(("sshd",pid=20603,fd=3),("systemd",pid=1,fd=184))
+LISTEN 0      4096                    127.0.0.54:53         0.0.0.0:*    users:(("systemd-resolve",pid=20607,fd=17))             
+LISTEN 0      4096                 100.124.146.5:54321      0.0.0.0:*    users:(("tailscaled",pid=654,fd=23))                    
+LISTEN 0      4096                 127.0.0.53%lo:53         0.0.0.0:*    users:(("systemd-resolve",pid=20607,fd=15))             
+LISTEN 0      4096                          [::]:22            [::]:*    users:(("sshd",pid=20603,fd=4),("systemd",pid=1,fd=185))
+LISTEN 0      4096   [fd7a:115c:a1e0::552f:9206]:38242         [::]:*    users:(("tailscaled",pid=654,fd=24))                    
+
+---- Failed systemd units ----
+
+---- Audit health ----
+enabled 1
+failure 1
+pid 48231
+rate_limit 0
+backlog_limit 8192
+lost 0
+backlog 0
+backlog_wait_time 60000
+backlog_wait_time_actual 0
+loginuid_immutable 0 unlocked
+
+---- Firewall ----
+Status: active
+Logging: on (medium)
+Default: deny (incoming), allow (outgoing), disabled (routed)
+New profiles: skip
+
+To                         Action      From
+--                         ------      ----
+22/tcp                     ALLOW IN    172.31.25.209              # Mobileum mta2 SSH trusted source
+22/tcp                     ALLOW IN    172.31.27.243              # Mobileum mta2 SSH trusted source
+25/tcp                     ALLOW IN    Anywhere                   # Mobileum Internet SMTP
+25/tcp (v6)                ALLOW IN    Anywhere (v6)              # Mobileum Internet SMTP
+
+
+---- AppArmor ----
+apparmor module is loaded.
+123 profiles are loaded.
+27 profiles are in enforce mode.
+   /snap/snapd/26865/usr/lib/snapd/snap-confine
+   /snap/snapd/27738/usr/lib/snapd/snap-confine
+   /usr/bin/man
+   /usr/lib/snapd/snap-confine
+   /usr/sbin/chronyd
+   lsb_release
+   man_filter
+   man_groff
+   nvidia_modprobe
+   nvidia_modprobe//kmod
+   plasmashell
+   plasmashell//QtWebEngineProcess
+   rsyslogd
+   snap-update-ns.amazon-ssm-agent
+   tcpdump
+   ubuntu_pro_apt_news
+   ubuntu_pro_esm_cache
+   ubuntu_pro_esm_cache//apt_methods
+   ubuntu_pro_esm_cache//apt_methods_gpgv
+   ubuntu_pro_esm_cache//cloud_id
+   ubuntu_pro_esm_cache//dpkg
+   ubuntu_pro_esm_cache//ps
+   ubuntu_pro_esm_cache//ubuntu_distro_info
+   ubuntu_pro_esm_cache_systemctl
+   ubuntu_pro_esm_cache_systemd_detect_virt
+   unix-chkpwd
+   unprivileged_userns
+6 profiles are in complain mode.
+   snap.amazon-ssm-agent.amazon-ssm-agent
+   snap.amazon-ssm-agent.ssm-cli
+   transmission-cli
+   transmission-daemon
+   transmission-gtk
+   transmission-qt
+0 profiles are in prompt mode.
+0 profiles are in kill mode.
+90 profiles are in unconfined mode.
+   1password
+   Discord
+   MongoDB Compass
+   QtWebEngineProcess
+   balena-etcher
+   brave
+   buildah
+   cam
+   ch-checkns
+   ch-run
+   chrome
+   crun
+   devhelp
+   element-desktop
+   epiphany
+   evolution
+   firefox
+   flatpak
+   foliate
+   geary
+   github-desktop
+   goldendict
+   ipa_verify
+   kchmviewer
+   keybase
+   lc-compliance
+   libcamerify
+   linux-sandbox
+   loupe
+   lxc-attach
+   lxc-create
+   lxc-destroy
+   lxc-execute
+   lxc-stop
+   lxc-unshare
+   lxc-usernsexec
+   mmdebstrap
+   msedge
+   nautilus
+   notepadqq
+   obsidian
+   opam
+   opera
+   pageedit
+   podman
+   polypane
+   privacybrowser
+   qcam
+   qmapshack
+   qutebrowser
+   rootlesskit
+   rpm
+   rssguard
+   runc
+   sbuild
+   sbuild-abort
+   sbuild-adduser
+   sbuild-apt
+   sbuild-checkpackages
+   sbuild-clean
+   sbuild-createchroot
+   sbuild-destroychroot
+   sbuild-distupgrade
+   sbuild-hold
+   sbuild-shell
+   sbuild-unhold
+   sbuild-update
+   sbuild-upgrade
+   scide
+   signal-desktop
+   slack
+   slirp4netns
+   steam
+   stress-ng
+   surfshark
+   systemd-coredump
+   thunderbird
+   toybox
+   trinity
+   tup
+   tuxedo-control-center
+   userbindmount
+   uwsgi-core
+   vdens
+   virtiofsd
+   vivaldi-bin
+   vpnns
+   vscode
+   wike
+   wpcom
+5 processes have profiles defined.
+3 processes are in enforce mode.
+   /usr/sbin/chronyd (20570) 
+   /usr/sbin/chronyd (20572) 
+   /usr/sbin/rsyslogd (48566) rsyslogd
+2 processes are in complain mode.
+   /snap/amazon-ssm-agent/13349/amazon-ssm-agent (647) snap.amazon-ssm-agent.amazon-ssm-agent
+   /snap/amazon-ssm-agent/13349/ssm-agent-worker (1655) snap.amazon-ssm-agent.amazon-ssm-agent
+0 processes are in prompt mode.
+0 processes are in kill mode.
+0 processes are unconfined but have a profile defined.
+0 processes are in mixed mode.
+
+---- SSH selected effective settings ----
+usepam yes
+maxauthtries 6
+maxsessions 10
+clientaliveinterval 0
+clientalivecountmax 3
+permitrootlogin without-password
+pubkeyauthentication yes
+passwordauthentication no
+x11forwarding yes
+permitemptypasswords no
+allowtcpforwarding yes
+loglevel INFO
+maxstartups 10:30:100
+
+---- Pending upgrade count ----
+Upgradeable packages: 16
+
+---- UID 0 accounts ----
+root
+
+---- Empty-password accounts ----
+None
+
+---- Preliminary observations ----
+[PASS] Audit enabled and lost=0
+[PASS] UFW is active
+[PASS] AppArmor service is active
+[INFO] SSH PermitRootLogin=without-password
+[INFO] SSH PasswordAuthentication=no
+[WARN] 16 package(s) are currently upgradeable
+
+---- Next steps ----
+1. Preserve this directory as PRE-hardening evidence.
+2. Run the external attack-surface scan from a separate host.
+3. Review the evidence against the Ubuntu 24.04 CIS Level 1 Server baseline.
+4. Apply 03 - CIS Level 1 OS Hardening only after the PRE baseline is frozen.
+5. Re-run equivalent tests during 04 - Post-Hardening Assessment.
+
+Evidence directory:
+  /var/log/mobileum-security/pre-hardening/mta2-20260916T135114Z
+==============================================================================
+
+Assessment completion marker: PRESENT
+
+======================================================================
+7. HARDENING EXECUTION
+======================================================================
+Latest evidence directory: /var/log/mobileum-security/hardening/mta2-20260916T135101Z
+
+==============================================================================
+ MOBILEUM MTA - 03 OS HARDENING SUMMARY
+==============================================================================
+Host                : mta2
+UTC Run ID          : 20260916T135101Z
+Script              : 03-mobileum-cis-l1-os-hardening-v1.4.sh v1.4
+Evidence            : /var/log/mobileum-security/hardening/mta2-20260916T135101Z
+Backup              : /var/backups/mobileum-os-hardening/mta2-20260916T135101Z
+
+Requested actions:
+  check-only        : 1
+  apply-safe        : 0
+  apply-pam         : 0
+  apply-firewall    : 0
+  reset-firewall    : 0
+  install-security-updates : 0
+  firewall-role req : auto
+  firewall-role det : mta2
+  jumpbox-private   : 172.31.25.209
+  peer-mta-private  : 172.31.27.243
+  office-public     : 45.119.114.19
+  aws-connect       : 52.22.247.175
+  disable-services  : none
+
+Counters:
+  PASS               : 26
+  WARN               : 3
+  FAIL               : 0
+  CHANGED            : 0
+  SKIPPED            : 0
+
+Project exceptions retained:
+  - Exim hardening excluded
+  - SSH daemon settings unchanged
+  - journald ForwardToSyslog=yes preserved from 01
+  - audit runtime remains modifiable; no audit -e 2
+  - AWS rp_filter setting is not changed
+  - no automatic filesystem repartitioning
+  - no automatic service removal
+  - upgradeable != vulnerability; security-pocket updates are classified separately
+  - MTA SSH host firewall trust: jumpbox private IP + peer MTA private IP
+  - Jumpbox SSH host firewall trust: office public /32 + aws-connect public /32
+
+This is a CIS Level 1-aligned implementation baseline, not formal CIS certification.
+==============================================================================
+
+Evidence files:
+01-os.txt
+02-audit-rules.txt
+02-audit-status.txt
+03-hardening-run.log
+AWS-SECURITY-GROUP-DESIGN.txt
+CONTROL-STATUS.tsv
+HARDENING-RUN-COMPLETE
+HARDENING-SUMMARY.txt
+account-aging-review.tsv
+apparmor-status.txt
+failed-units.txt
+listening-ports.txt
+login-defs-aging.txt
+mount-review.txt
+service-inventory-all.txt
+service-review-candidates.tsv
+sysctl-check.txt
+ufw-check.txt
+updates-check.txt
+updates-classified.tsv
+visudo-validation.txt
+
+----- service-inventory-all.txt : first 25 lines -----
+# ALL ENABLED SERVICE UNIT FILES
+UNIT FILE                                      STATE   PRESET
+apparmor.service                               enabled enabled
+apport.service                                 enabled enabled
+auditd.service                                 enabled enabled
+blk-availability.service                       enabled enabled
+chrony.service                                 enabled enabled
+cloud-config.service                           enabled enabled
+cloud-final.service                            enabled enabled
+cloud-init-local.service                       enabled enabled
+cloud-init.service                             enabled enabled
+console-setup.service                          enabled enabled
+cron.service                                   enabled enabled
+dmesg.service                                  enabled enabled
+e2scrub_reap.service                           enabled enabled
+ec2-instance-connect-harvest-hostkeys.service  enabled enabled
+exim4.service                                  enabled enabled
+finalrd.service                                enabled enabled
+getty@.service                                 enabled enabled
+grub-common.service                            enabled enabled
+grub-initrd-fallback.service                   enabled enabled
+hibinit-agent.service                          enabled enabled
+irqbalance.service                             enabled enabled
+keyboard-setup.service                         enabled enabled
+lvm2-monitor.service                           enabled enabled
+
+----- service-review-candidates.tsv : first 25 lines -----
+Service	EnabledState	ActiveState	UnitFile	Classification	Action
+ModemManager.service	enabled	active	/usr/lib/systemd/system/ModemManager.service	REVIEW_ON_ACTUAL_MTA	DO_NOT_AUTO_REMOVE
+multipathd.service	enabled	active	/usr/lib/systemd/system/multipathd.service	REVIEW_ON_ACTUAL_MTA	DO_NOT_AUTO_REMOVE
+open-iscsi.service	enabled	inactive	/usr/lib/systemd/system/open-iscsi.service	REVIEW_ON_ACTUAL_MTA	DO_NOT_AUTO_REMOVE
+open-vm-tools.service	enabled	inactive	/usr/lib/systemd/system/open-vm-tools.service	REVIEW_ON_ACTUAL_MTA	DO_NOT_AUTO_REMOVE
+udisks2.service	enabled	active	/usr/lib/systemd/system/udisks2.service	REVIEW_ON_ACTUAL_MTA	DO_NOT_AUTO_REMOVE
+fwupd.service	static	active	/usr/lib/systemd/system/fwupd.service	REVIEW_ON_ACTUAL_MTA	DO_NOT_AUTO_REMOVE
+apport.service	enabled	active	/usr/lib/systemd/system/apport.service	REVIEW_ON_ACTUAL_MTA	DO_NOT_AUTO_REMOVE
+snapd.service	enabled	active	/usr/lib/systemd/system/snapd.service	REVIEW_ON_ACTUAL_MTA	DO_NOT_AUTO_REMOVE
+
+----- updates-classified.tsv : first 25 lines -----
+Package	Repositories	Candidate	Architecture	Installed	Classification
+base-files	noble-updates	13ubuntu10.5	amd64	13ubuntu10.4	STANDARD_UPDATE
+krb5-locales	noble-updates	1.20.1-6ubuntu2.10	all	1.20.1-6ubuntu2.8	STANDARD_UPDATE
+libgssapi-krb5-2	noble-updates	1.20.1-6ubuntu2.10	amd64	1.20.1-6ubuntu2.8	STANDARD_UPDATE
+libk5crypto3	noble-updates	1.20.1-6ubuntu2.10	amd64	1.20.1-6ubuntu2.8	STANDARD_UPDATE
+libkrb5-3	noble-updates	1.20.1-6ubuntu2.10	amd64	1.20.1-6ubuntu2.8	STANDARD_UPDATE
+libkrb5support0	noble-updates	1.20.1-6ubuntu2.10	amd64	1.20.1-6ubuntu2.8	STANDARD_UPDATE
+libnetplan1	noble-updates	1.1.2-8ubuntu1~24.04.3	amd64	1.1.2-8ubuntu1~24.04.2	STANDARD_UPDATE
+motd-news-config	noble-updates	13ubuntu10.5	all	13ubuntu10.4	STANDARD_UPDATE
+netplan-generator	noble-updates	1.1.2-8ubuntu1~24.04.3	amd64	1.1.2-8ubuntu1~24.04.2	STANDARD_UPDATE
+netplan.io	noble-updates	1.1.2-8ubuntu1~24.04.3	amd64	1.1.2-8ubuntu1~24.04.2	STANDARD_UPDATE
+python-apt-common	noble-updates	2.7.7ubuntu5.3	all	2.7.7ubuntu5.2	STANDARD_UPDATE
+python3-apt	noble-updates	2.7.7ubuntu5.3	amd64	2.7.7ubuntu5.2	STANDARD_UPDATE
+python3-distupgrade	noble-updates	1:24.04.29	all	1:24.04.28	STANDARD_UPDATE
+python3-netplan	noble-updates	1.1.2-8ubuntu1~24.04.3	amd64	1.1.2-8ubuntu1~24.04.2	STANDARD_UPDATE
+tailscale	unknown	1.102.4	amd64	1.102.3	OTHER_OR_THIRD_PARTY
+ubuntu-release-upgrader-core	noble-updates	1:24.04.29	all	1:24.04.28	STANDARD_UPDATE
+
+----- account-aging-review.tsv : first 25 lines -----
+user	passwd_state	min_days	max_days	warn_days	assessment
+root	L	0	99999	7	EXCEPTION_PASSWORD_LOCKED_KEY_BASED
+ubuntu	L	0	99999	7	EXCEPTION_PASSWORD_LOCKED_KEY_BASED
+
+======================================================================
+8. POST-HARDENING VALIDATION
+======================================================================
+Latest evidence directory: /var/log/mobileum-security/post-hardening/mta2-20260916T153045Z
+
+Evidence files:
+01-system-info.txt
+02-logging-audit-status.txt
+03-sysctl-validation.tsv
+03b-ufw-sysctl-persistence.txt
+04-permissions-validation.tsv
+04-post-hardening-run.log
+05-visudo-validation.txt
+06-apparmor-status.txt
+07-pam-state.txt
+08-account-aging-review.tsv
+09-ufw-numbered.txt
+09-ufw-status.txt
+10-admin-session.txt
+11-reboot-required.pkgs.txt
+11-reboot-required.txt
+11-updates-classified.tsv
+11-updates-raw.txt
+12-service-review-candidates.tsv
+12-services-runtime.txt
+13-listening-ports.txt
+14-mount-review.txt
+CONTROL-STATUS.tsv
+FINAL-RESULT.txt
+POST-HARDENING-COMPLETE
+POST-HARDENING-SUMMARY.txt
+PRE-POST-COMPARISON.tsv
+REMEDIATION-COMMANDS.txt
+
+Summary-sized excerpts:
+
+----- 03-sysctl-validation.tsv -----
+Key	Current	Target	Result
+net.ipv4.conf.all.accept_redirects	0	0	PASS
+net.ipv4.conf.all.secure_redirects	0	0	PASS
+net.ipv4.ip_forward	0	0	PASS
+kernel.randomize_va_space	2	2	PASS
+net.ipv4.conf.default.secure_redirects	0	0	PASS
+net.ipv4.conf.default.accept_source_route	0	0	PASS
+net.ipv4.icmp_ignore_bogus_error_responses	1	1	PASS
+fs.protected_hardlinks	1	1	PASS
+net.ipv4.conf.default.log_martians	0	1	FAIL
+net.ipv4.conf.all.forwarding	0	0	PASS
+net.ipv4.conf.all.accept_source_route	0	0	PASS
+net.ipv4.icmp_echo_ignore_broadcasts	1	1	PASS
+net.ipv4.conf.all.send_redirects	0	0	PASS
+net.ipv4.conf.all.log_martians	0	1	FAIL
+net.ipv4.tcp_syncookies	1	1	PASS
+net.ipv4.conf.default.send_redirects	0	0	PASS
+net.ipv4.conf.default.accept_redirects	0	0	PASS
+net.ipv6.conf.all.accept_source_route	0	0	PASS
+fs.protected_symlinks	1	1	PASS
+net.ipv6.conf.default.accept_source_route	0	0	PASS
+net.ipv6.conf.default.accept_redirects	0	0	PASS
+net.ipv6.conf.all.accept_redirects	0	0	PASS
+
+======================================================================
+9. CONFIGURATION BACKUPS
+======================================================================
+Latest backup directory: /var/backups/mobileum-os-hardening/mta2-20260916T135101Z
+
+Backup object count:
+90
+
+Sample backup contents:
+apt-manual.txt
+audit-rules-pre.txt
+audit-status-pre.txt
+dpkg-selections.txt
+etc/default/ufw
+etc/login.defs
+etc/pam.d/chfn
+etc/pam.d/chpasswd
+etc/pam.d/chsh
+etc/pam.d/common-account
+etc/pam.d/common-account.pam-old
+etc/pam.d/common-auth
+etc/pam.d/common-auth.pam-old
+etc/pam.d/common-password
+etc/pam.d/common-password.pam-old
+etc/pam.d/common-session
+etc/pam.d/common-session-noninteractive
+etc/pam.d/common-session-noninteractive.pam-old
+etc/pam.d/common-session.pam-old
+etc/pam.d/cron
+etc/pam.d/login
+etc/pam.d/newusers
+etc/pam.d/other
+etc/pam.d/passwd
+etc/pam.d/runuser
+etc/pam.d/runuser-l
+etc/pam.d/sshd
+etc/pam.d/su
+etc/pam.d/su-l
+etc/pam.d/sudo
+etc/pam.d/sudo-i
+etc/pam.d/vmtoolsd
+etc/security/access.conf
+etc/security/capability.conf
+etc/security/faillock.conf
+etc/security/group.conf
+etc/security/limits.conf
+etc/security/namespace.conf
+etc/security/namespace.init
+etc/security/opasswd
+etc/security/pam_env.conf
+etc/security/pwhistory.conf
+etc/security/pwquality.conf
+etc/security/pwquality.conf.d/50-mobileum.conf
+etc/security/sepermit.conf
+etc/security/time.conf
+etc/sudoers
+etc/sudoers.d/90-cloud-init-users
+etc/sudoers.d/91-mobileum-cis-l1
+etc/sudoers.d/README
+
+======================================================================
+10. KEY SECURITY SERVICES
+======================================================================
+ssh                  : active
+auditd               : active
+rsyslog              : active
+ufw                  : active
+fail2ban             : inactive
+not-found/inactive
+
+======================================================================
+11. FAILED SERVICES
+======================================================================
+  UNIT LOAD ACTIVE SUB DESCRIPTION
+
+0 loaded units listed.
+
+======================================================================
+12. LISTENING NETWORK PORTS
+======================================================================
+Netid State  Recv-Q Send-Q               Local Address:Port  Peer Address:PortProcess                                                 
+udp   UNCONN 0      0                          0.0.0.0:41641      0.0.0.0:*    users:(("tailscaled",pid=749,fd=19))                   
+udp   UNCONN 0      0                       127.0.0.54:53         0.0.0.0:*    users:(("systemd-resolve",pid=478,fd=16))              
+udp   UNCONN 0      0                    127.0.0.53%lo:53         0.0.0.0:*    users:(("systemd-resolve",pid=478,fd=14))              
+udp   UNCONN 0      0                172.31.28.75%ens5:68         0.0.0.0:*    users:(("systemd-network",pid=686,fd=23))              
+udp   UNCONN 0      0                        127.0.0.1:323        0.0.0.0:*    users:(("chronyd",pid=827,fd=5))                       
+udp   UNCONN 0      0                             [::]:41641         [::]:*    users:(("tailscaled",pid=749,fd=18))                   
+udp   UNCONN 0      0                            [::1]:323           [::]:*    users:(("chronyd",pid=827,fd=6))                       
+tcp   LISTEN 0      4096                 127.0.0.53%lo:53         0.0.0.0:*    users:(("systemd-resolve",pid=478,fd=15))              
+tcp   LISTEN 0      100                      127.0.0.1:25         0.0.0.0:*    users:(("exim4",pid=820505,fd=4))                      
+tcp   LISTEN 0      4096                 100.124.146.5:54321      0.0.0.0:*    users:(("tailscaled",pid=749,fd=23))                   
+tcp   LISTEN 0      100                   172.31.28.75:25         0.0.0.0:*    users:(("exim4",pid=820505,fd=5))                      
+tcp   LISTEN 0      4096                    127.0.0.54:53         0.0.0.0:*    users:(("systemd-resolve",pid=478,fd=17))              
+tcp   LISTEN 0      4096                       0.0.0.0:22         0.0.0.0:*    users:(("sshd",pid=1240,fd=3),("systemd",pid=1,fd=115))
+tcp   LISTEN 0      4096   [fd7a:115c:a1e0::552f:9206]:38242         [::]:*    users:(("tailscaled",pid=749,fd=24))                   
+tcp   LISTEN 0      4096                          [::]:22            [::]:*    users:(("sshd",pid=1240,fd=4),("systemd",pid=1,fd=116))
+
+======================================================================
+13. SECURITY EVIDENCE INVENTORY
+======================================================================
+/var/log/mobileum-security
+/var/log/mobileum-security/hardening
+/var/log/mobileum-security/hardening/mta2-20260916T134912Z
+/var/log/mobileum-security/hardening/mta2-20260916T134929Z
+/var/log/mobileum-security/hardening/mta2-20260916T134940Z
+/var/log/mobileum-security/hardening/mta2-20260916T134958Z
+/var/log/mobileum-security/hardening/mta2-20260916T135011Z
+/var/log/mobileum-security/hardening/mta2-20260916T135101Z
+/var/log/mobileum-security/logging
+/var/log/mobileum-security/logging/mta2-20260916T134710Z
+/var/log/mobileum-security/post-hardening
+/var/log/mobileum-security/post-hardening/mta2-20260916T153045Z
+/var/log/mobileum-security/pre-hardening
+/var/log/mobileum-security/pre-hardening/mta2-20260916T134846Z
+/var/log/mobileum-security/pre-hardening/mta2-20260916T135114Z
+/var/log/mobileum-security/rollback
+/var/log/mobileum-security/rollback/01-logging-mta2-20260916T134710Z
+/var/log/mobileum-security/validation
+/var/log/mobileum-security/validation/mta2-20260916T134832Z
+
+======================================================================
+14. BACKUP INVENTORY
+======================================================================
+/var/backups/mobileum-os-hardening
+/var/backups/mobileum-os-hardening/mta2-20260916T134912Z
+/var/backups/mobileum-os-hardening/mta2-20260916T134929Z
+/var/backups/mobileum-os-hardening/mta2-20260916T134940Z
+/var/backups/mobileum-os-hardening/mta2-20260916T134958Z
+/var/backups/mobileum-os-hardening/mta2-20260916T135011Z
+/var/backups/mobileum-os-hardening/mta2-20260916T135101Z
+
+======================================================================
+15. REPORT CONCLUSION
+======================================================================
+This report summarizes the current Mobileum MTA OS hardening state.
+Raw audit logs, journal records, sudo session recordings and complete
+assessment artifacts remain available on the host as supporting evidence.
+
+This summary intentionally avoids embedding complete operational logs.
+
+Report file: mta2-hardening-summary.txt
+[?2004h]0;ubuntu@mta2: ~/mta-os-hardening[01;32mubuntu@mta2[00m:[01;34m~/mta-os-hardening[00m$ [K]0;ubuntu@mta2: ~/mta-os-hardening[01;32mubuntu@mta2[00m:[01;34m~/mta-os-hardening[00m$ clear
+[?2004l[H[2J[3J[?2004h]0;ubuntu@mta2: ~/mta-os-hardening[01;32mubuntu@mta2[00m:[01;34m~/mta-os-hardening[00m$ [7msudo ufw status numbered[27msudo ufw status numbered
+[?2004lStatus: active
+
+     To                         Action      From
+     --                         ------      ----
+[ 1] 22/tcp                     ALLOW IN    172.31.25.209              # Mobileum mta2 SSH trusted source
+[ 2] 22/tcp                     ALLOW IN    172.31.27.243              # Mobileum mta2 SSH trusted source
+[ 3] 25/tcp                     ALLOW IN    Anywhere                   # MTA2 Internet SMTP telemetry
+[ 4] 25/tcp (v6)                DENY OUT    Anywhere (v6)              (out) # MTA2 telemetry - block outbound SMTP
+
+[?2004h]0;ubuntu@mta2: ~/mta-os-hardening[01;32mubuntu@mta2[00m:[01;34m~/mta-os-hardening[00m$ [7msudo ufw status numbered[27msudo ufw status numbered
+[?2004lStatus: active
+
+     To                         Action      From
+     --                         ------      ----
+[ 1] 22/tcp                     ALLOW IN    172.31.25.209              # Mobileum mta2 SSH trusted source
+[ 2] 22/tcp                     ALLOW IN    172.31.27.243              # Mobileum mta2 SSH trusted source
+[ 3] 25/tcp                     ALLOW IN    Anywhere                   # MTA2 Internet SMTP telemetry
+[ 4] 25/tcp (v6)                DENY OUT    Anywhere (v6)              (out) # MTA2 telemetry - block outbound SMTP
+
+[?2004h]0;ubuntu@mta2: ~/mta-os-hardening[01;32mubuntu@mta2[00m:[01;34m~/mta-os-hardening[00m$ [7msudo ufw delete 4[27msudo ufw delete 4
+[?2004lDeleting:
+ deny out 25/tcp comment 'MTA2 telemetry - block outbound SMTP'
+Proceed with operation (y|n)? Rule deleted (v6)
+[?2004h]0;ubuntu@mta2: ~/mta-os-hardening[01;32mubuntu@mta2[00m:[01;34m~/mta-os-hardening[00m$ [7msudo ufw status verbose[27msudo ufw status verbose
+[?2004lStatus: active
+Logging: on (medium)
+Default: deny (incoming), allow (outgoing), disabled (routed)
+New profiles: skip
+
+To                         Action      From
+--                         ------      ----
+22/tcp                     ALLOW IN    172.31.25.209              # Mobileum mta2 SSH trusted source
+22/tcp                     ALLOW IN    172.31.27.243              # Mobileum mta2 SSH trusted source
+25/tcp                     ALLOW IN    Anywhere                   # MTA2 Internet SMTP telemetry
+
+[?2004h]0;ubuntu@mta2: ~/mta-os-hardening[01;32mubuntu@mta2[00m:[01;34m~/mta-os-hardening[00m$ ls
+[?2004l01-mobileum-enable-logging-v3.sh
+02-mobileum-pre-hardening-assessment-v3.1.sh
+03-mobileum-cis-l1-os-hardening-v1.4.sh
+04-mobileum-post-hardening-validation-v2.sh
+Mobileum_MTA_Hardening_Log_Locations.md
+Mobileum_MTA_OS_Logging_Audit_Validation_Tests-v3.sh
+README.md
+mta1-hardening-summary.txt
+mta1-report.txt
+mta2-hardening-summary.txt
+scripts.sh
+[?2004h]0;ubuntu@mta2: ~/mta-os-hardening[01;32mubuntu@mta2[00m:[01;34m~/mta-os-hardening[00m$ git status
+[?2004lOn branch main
+Your branch is up to date with 'origin/main'.
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	mta2-hardening-summary.txt
+
+nothing added to commit but untracked files present (use "git add" to track)
+[?2004h]0;ubuntu@mta2: ~/mta-os-hardening[01;32mubuntu@mta2[00m:[01;34m~/mta-os-hardening[00m$ git add .
+[?2004l
